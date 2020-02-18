@@ -4,7 +4,6 @@ import Prelude hiding ((!!))
 import Control.Monad.Random (getRandom)
 import Data.Vector (Vector, replicateM, imap)
 import Data.Bool (bool)
-import Data.Foldable (fold)
 import BitsNBobs ((!!), iterateUntilM, mapTriple, pattern T, pattern F)
 
 -- Compute the next row from the previous one
@@ -34,7 +33,7 @@ shouldStop r =
 
 -- Show the row in a nice compact form
 render :: Vector Bool -> String
-render = fold . fmap (show @Integer . bool 0 1)
+render = foldMap (show @Integer . bool 0 1)
 
 main :: IO ()
 main = do
