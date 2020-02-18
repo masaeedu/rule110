@@ -9,29 +9,28 @@ import BitsNBobs ((!!), iterateUntilM, mapTriple, pattern T, pattern F)
 
 -- Compute the next row from the previous one
 step :: Vector Bool -> Vector Bool
-step vec = imap (\i _ -> next $ prev $ i) vec
+step row = imap (\col _ -> fill $ extract $ col) row
   where
   -- Extract the previous cells for a given position
-  prev :: Int -> (Bool, Bool, Bool)
-  prev i = ((vec !!) . (i +)) `mapTriple` (-1, 0, 1)
+  extract :: Int -> (Bool, Bool, Bool)
+  extract col = ((row !!) . (col +)) `mapTriple` (-1, 0, 1)
 
-  -- Calculate the cell below
-  next :: (Bool, Bool, Bool) -> Bool
-  next (T, T, T) = F
-  next (T, T, F) = T
-  next (T, F, T) = T
-  next (T, F, F) = F
-  next (F, T, T) = T
-  next (F, T, F) = T
-  next (F, F, T) = T
-  next (F, F, F) = F
+  fill :: (Bool, Bool, Bool) -> Bool
+  fill (T, T, T) = F
+  fill (T, T, F) = T
+  fill (T, F, T) = T
+  fill (T, F, F) = F
+  fill (F, T, T) = T
+  fill (F, T, F) = T
+  fill (F, F, T) = T
+  fill (F, F, F) = F
   -- TODO: maybe see if this is some bit twiddling operation
 
 -- Stop if the row is full of ones or zeros
 shouldStop :: Vector Bool -> Bool
-shouldStop v =
-  let n = sum $ bool 0 1 <$> v
-  in n == 0 || n == length v
+shouldStop r =
+  let n = sum $ bool 0 1 <$> r
+  in n == 0 || n == length r
 
 -- Show the row in a nice compact form
 render :: Vector Bool -> String
@@ -45,11 +44,11 @@ main = do
   -- Generate the first row
   r0 <- replicateM n getRandom
   -- Iterate by...
-  flip iterateUntilM r0 $ \v -> do
+  flip iterateUntilM r0 $ \r -> do
     -- ...printing the current row, and...
-    putStrLn $ render v
+    putStrLn $ render r
     -- ... producing another row if appropriate
-    pure $ if shouldStop v
+    pure $ if shouldStop r
         then Nothing
-        else Just (step v)
+        else Just (step r)
   pure ()
