@@ -6,7 +6,7 @@ import Data.Vector (Vector, (!))
 (!!) :: Vector a -> Int -> a
 v !! i =
   let l = length v
-  in v ! ((i + l) `mod` l)
+  in v ! (i `mod` l)
 
 -- Given some starting value, iterates it using a @Maybe@-producing
 -- monadic action until it produces @Nothing@
